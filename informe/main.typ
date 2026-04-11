@@ -152,4 +152,25 @@ El error de entrenamiento del perceptrón para la función OR de cuatro entradas
   caption: [Evolución del error durante el entrenamiento de un perceptrón simple para la OR de cuatro entradas.],
 ) <fig:or4d_mse>
 
+== Capacidad del perceptrón simple
+
+La capacidad del perceptrón simple puede definirse como la máxima cantidad de patrones aleatorios que pueden enseñarse al perceptrón y que el mismo aún sea capaz de encontrar un hiperplano que separe las salidas deseadas $-1$ de las $+1$. Es decir, se busca la máxima cantidad de puntos tales que el problema a entrenar sea linealmente separable. Con gran trabajo, puede demostrarse que para $N arrow infinity$ la cantidad de patrones que pueden aprenderse es
+$ N_(p, max) = 2 N, $
+o sea, la capacidad relativa del perceptrón es
+$ C = N_(p, max) / N = 2. $
+
+Entonces, para $N$ grande, se espera que el perceptrón _siempre_ converja si la cantidad de puntos aleatorios enseñados es menor que $2 N$, y que _nunca_ halle tal solución si es mayor que dicho límite. En la realidad, para valores de $N$ finitos, se observará que la probabilidad de hallar una solución es alta para valores de $N_p$ pequeños, y caerá en forma aproximadamente sigmoide hacia cero, valiendo alrededor de $0.5$ en $N_p = 2 N$. Cuanto más grande sea $N$, más abrupta será la transición.
+
+Para mostrar esto, se entrenó un perceptrón simple de $N=30$ entradas, con una cantidad creciente de patrones entre $N_p = 1$ y $N_p = 3 N$. Los patrones son puntos aleatorios uniformes en el hipercubo $[-1, 1]^N$, y sus salidas deseadas son al azar $plus.minus 1$. Se repitió el experimento 20 veces, notando la cantidad de pruebas en la que el perceptrón convergió a una solución de error nulo, antes de llegar a un número máximo de épocas establecido en 1000. Para cada valor de $N_p$ se obtuvo entonces una estimación de la probabilidad de que el entrenamiento converja. El _learning rate_ se estableció en $0.01$.
+
+Los resultados se muestran en la @fig:capacidad, en función de la cantidad relativa $N_p slash N$ de patrones. Como es de esperar, para cantidades de patrones pequeñas, el aprendizaje logra encontrar una solución en cualquier caso. A medida que crece $N_p$, los patrones se vuelven más "difíciles" de aprender, por lo que hay más ocasiones en las que no converge a una solución. La caída es relativamente abrupta y alrededor de un valor de $N_p slash N = 2$, lo cual es esperable dado el número finito de entradas usado.
+
+#figure(
+  placement: auto,
+  image("img/ej2/capacidad.svg", width: 67%),
+  caption: [Probabilidad de convergencia del aprendizaje en función de la cantidad relativa $N_p slash N$ de patrones enseñados, simulado para $N=30$.],
+) <fig:capacidad>
+
+No se calculó la capacidad para valores superiores de $N$ dado que el cómputo tardaba demasiado tiempo.
+
 // vim: lbr
