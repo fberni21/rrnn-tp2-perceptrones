@@ -65,7 +65,7 @@
 == Implementación de funciones lógicas con un perceptrón simple
 
 En primer lugar se implementó un perceptrón simple con salidas booleanas ($plus.minus 1$), con el objetivo de entrenarlo sobre funciones lógicas. En particular, se estudió el desempeño del perceptrón sobre las funciones AND y OR, de las cuales se tiene garantía de hallar una solución puesto que son linealmente separables. Como función de activación se utilizó la función signo dada por
-$ sgn(x) = cases( +1 "si" x gt.eq 0, -1 "si" x lt 0). $
+$ sgn(x) = cases( +1 "si" x gt.eq 0, -1 "si" x lt 0) space . $
 Por simplicidad, se tomó la entrada $-1$ como correspondiente al cero lógico. Las tablas de verdad de las funciones lógicas de dos entradas $X_1$ y $X_2$, utilizando esta convención, se muestran en la @tab:verdad.
 
 #figure(
