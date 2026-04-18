@@ -173,4 +173,62 @@ Los resultados se muestran en la @fig:capacidad, en función de la cantidad rela
 
 No se calculó la capacidad para valores superiores de $N$ dado que el cómputo tardaba demasiado tiempo.
 
+== Implementación de XOR con un perceptrón multicapa
+
+Para abordar problemas de mayor complejidad que no son linealmente separables, como la función XOR, se implementó un perceptrón multicapa o MLP (por sus siglas en inglés). El MLP implementado realiza la actualización de los pesos por gradiente descendente y _error backpropagation_, modificando los pesos en _batch_. En particular, se usaron _full batches_, lo que significa que se procesa todo el conjunto de datos de entrenamiento completo durante una época, se calcula el gradiente promedio, y se actualizan los pesos al final de la época en función de dicho gradiente promediado.
+
+La función de activación que se utilizó fue la sigmoide definida por
+$ g(x) = 1 / (1 + exp(-x)), $
+cuya salida tiende a $0$ para entradas muy negativas, pasa por $1 slash 2$ para $x=0$, y tiende a $1$ para entradas muy positivas. Una propiedad interesante y útil de esta función es que su derivada es
+$ g'(x) = g(x) (1 - g(x)). $
+Esto simplifica los cálculos de _backpropagation_.
+
+Notar que debido a que $g : RR arrow (0, 1)$, las variables booleanas se tomaron como $1$ para el valor verdadero, y $0$ para el falso. Esto es en contraste con la convención tomada en las secciones anteriores.
+
+La función de error o _loss_ utilizada es
+$ E = 1/2 sum_i (hat(y)_i - y_i)^2, $
+donde $hat(y)_i$ es la salida de la red para el $i$-ésimo patrón, mientras que $y_i$ es el resultado esperado.
+
+Los pesos fueron iniciados con valores aleatorios i.i.d. normales estándar.
+
+=== Función XOR de dos entradas
+
+En primer lugar, se entrenó un perceptrón para que aprenda la función XOR de dos entradas. Esta función vale $1$ si alguna entrada, pero no ambas, vale $1$. Si ninguna o ambas son $1$, entonces devuelve $0$. Otra forma de verlo, que servirá para entender la extensión a múltiples entradas, es que devuelve $1$ si la cantidad de entradas en $1$ es impar, y $0$ si es par.
+
+Es sabido que la función XOR no es linealmente separable, y que además requiere de un  MLP con al menos dos neuronas en la capa oculta. El MLP entrenado fue éste, teniendo dos entradas, dos neuronas en su capa oculta, y una única salida. La red se entrenó durante 5000 épocas, utilizando un _learning rate_ de $1.0$.
+
+La evolución de la _loss_ se muestra en la @fig:xor2loss. Notar que tras una abrupta disminución del error en las primeras épocas, el entrenamiento se topa con una sección donde el gradiente del error se hace pequeño. El error disminuye muy poco hasta alrededor de la época 800, donde empieza a disminuir más rápidamente. Alrededor de la época 2000, un gradiente favorable hace el error caiga rápidamente y se acerque asintóticamente a cero.
+
+#figure(
+  placement: auto,
+  image("img/ej3/loss2.svg", width: 67%),
+  caption: [Evolución del error del perceptrón multicapa para el aprendizaje de la XOR de dos entradas],
+) <fig:xor2loss>
+
+La @fig:xor2boundary muestra las fronteras de decisión que aprendió el MLP para clasificar las muestras de la función XOR. Las fronteras se corresponden con las líneas donde la salida es $0.5$. Aquellas muestras que caen en sectores rojos (salida $>0.5$), se toman como $1$, mientras que las de la zona azul (salida $<0.5$) se clasifican como $0$. La red fue capaz de aprender correctamente la función XOR de dos entradas. Las salidas tomadas como $1$ se corresponden con valores de alrededor de $0.95$, mientras que las tomadas como $0$ rondaban $0.05$.
+
+#figure(
+  placement: auto,
+  image("img/ej3/decision2.svg", width: 45%),
+  caption: [Fronteras de decisión de la función XOR de dos entradas, aprendidas por el perceptrón multicapa.],
+) <fig:xor2boundary>
+
+=== Función XOR de cuatro entradas (función de paridad)
+
+El siguiente experimento consistió del entrenamiento de un MLP sobre una función XOR de cuatro entradas. Como se mencionó anteriormente, esta generalización consiste en contar la cantidad de entradas que valen $1$, y devolviendo como salida $1$ si la cuenta es impar, o $0$ si es par. Por este motivo, la función XOR generalizada se suele llamar función de paridad.
+
+El aprendizaje se hizo sobre los $16$ posibles pares de entrada-salida. La arquitectura de la red fue de cuatro entradas, una capa oculta con cuatro neuronas, y una neurona de salida . El _learning rate_ se mantuvo en $1.0$, y se entrenó durante 20000 épocas.
+
+La evolución del error o _loss_ durante el entrenamiento se muestra en la @fig:xor4loss. Nuevamente, vemos una caída inicial abrupta del error. Un gran estancamiento ocurre entre las épocas 5000 y 17500, debido a un gradiente desfavorablemente pequeño. Finalmente, tras una caída rápida del error, este tiende a anularse hacia la época 20000.
+
+#figure(
+  placement: auto,
+  image("img/ej3/loss4.svg", width: 67%),
+  caption: [Evolución del error del perceptrón multicapa para el aprendizaje de la XOR de cuatro entradas],
+) <fig:xor4loss>
+
+Debido a la mayor complejidad de la función a aprender y de la mayor cantidad de neuronas, la red demora mucho más tiempo en converger que la de dos entradas, si se mantiene el mismo _learning rate_.
+
+Se verificó que tras la convergencia, la red es capaz de evaluar correctamente la función XOR de cuatro entradas. Para ello, nuevamente se tomó como $1$ aquellas salidas cuyo valor es $>0.5$, y como $0$ si son menores. Aún así, se destaca que las salidas categorizadas como $1$ rondaban valores de $0.9$ y mayores, mientras que las salidas $0$ rondaban $0.1$ y menos.
+
 // vim: lbr
