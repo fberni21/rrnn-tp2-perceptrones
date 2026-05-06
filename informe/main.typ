@@ -231,4 +231,69 @@ Debido a la mayor complejidad de la función a aprender y de la mayor cantidad d
 
 Se verificó que tras la convergencia, la red es capaz de evaluar correctamente la función XOR de cuatro entradas. Para ello, nuevamente se tomó como $1$ aquellas salidas cuyo valor es $>0.5$, y como $0$ si son menores. Aún así, se destaca que las salidas categorizadas como $1$ rondaban valores de $0.9$ y mayores, mientras que las salidas $0$ rondaban $0.1$ y menos.
 
+== Implementación de una función continua con perceptrón multicapa
+
+Este experimento consistió del entrenamiento de un perceptrón multicapa utilizando _backpropagation_, para el aprendizaje de un campo escalar continuo definido por
+$ f(x,y,z) = sin(x) + cos(y) + z, $
+con $(x,y) in [0, 2 pi]^2$ y $z in [-1, 1]$.
+
+En todos los casos, la red utilizada posee tres entradas para las variables $(x, y, z)$, una capa oculta de 30 neuronas con activación sigmoide, y una única neurona de salida con activación lineal. La activación lineal es necesaria para que la red pueda ser capaz de tener a su salida valores en el rango de $[-3, 3]$ (el dominio de $f$), dado que no estamos en un problema de clasificación o de respuestas discretas, como anteriormente.
+
+=== Entrenamiento de un perceptrón multicapa con muchas muestras
+
+En primer lugar, se entrenó a la red descripta anteriormente utilizando un conjunto de datos de 1000 muestras, de las cuales 900 se usaron para el entrenamiento _per se_, y las restantes 100 como testeo. Las muestras se generaron aleatoriamente, escogiendo uniformemente valores de las tres entradas dentro del dominio de la función, y evaluando su resultado. El entrenamiento se realizó en un único batch, con una tasa de aprendizaje de 0.1, durante 1000 épocas.
+
+La @fig:ej4_loss muestra el error de entrenamiento y de testeo (evaluación) durante el entrenamiento. Se observa cómo la red disminuye su error conforme pasan las épocas, inicialmente a una velocidad rápida y luego en forma más lenta. Tanto para el entrenamiento como la evaluación, el error decrece monotónicamente, y es similar en ambos casos, lo que sugiere que no hay _overfitting_.
+
+#figure(
+  placement: auto,
+  image("img/ej4/loss.svg", width: 67%),
+  caption: [Errores de entrenamiento y evaluación para el entrenamiento de un MLP con una capa oculta de 30 neuronas sobre la función $f(x,y,z) = sin(x) + cos(y) + z$.],
+) <fig:ej4_loss>
+
+Para comparar la salida real con la aprendida por la red, se graficaron las salidas de la red en función de las esperadas para cada una de las muestras de testeo. El resultado se observa en la @fig:ej4_pred. Si la red aprende perfectamente la función, el resultado esperado es que las muestras se alineen sobre una recta de pendiente unitaria (naranja), es decir, que las salidas esperadas y las reales coinciden. Vemos que el comportamiento de la red es correcto, ya que las muestras (azul) tienden a tener valores similares a los esperados, encontrándose cerca de la recta identidad.
+
+Como segunda forma de comparación, se evaluó la función en el subconjunto $(x, y, z) = (x, pi, 0.5)$. La @fig:ej4_out muestra el valor esperado (naranja) y el valor evaluado por la red (azul) en este subconjunto. La red es relativamente capaz de aprender las curvas de la función resultante, aunque tiene más problemas para representar el valle de la función seno en estos valores.
+
+#grid(columns: 2, gutter: 1.5em,
+grid.cell([
+  #figure(
+    placement:auto,
+    image("img/ej4/prediction.svg"),
+    caption: [Salidas de la red en función de las salidas esperadas para el conjunto de testeo, en azul. Resultado ideal esperado, en naranja.],
+  ) <fig:ej4_pred>
+]),
+grid.cell([
+  #figure(
+    placement:auto,
+    image("img/ej4/output.svg"),
+    caption: [Salida esperada (naranja) y obtenida (azul) por la red para un _slice_ de $f(x,y,z)$, donde $y=pi$,\ $z=0.5$, y $x in [0, 2 pi]$.],
+  ) <fig:ej4_out>
+])
+)
+
+=== Efectos del tamaño del minibatch
+
+En la segunda parte del experimento se reentrenó la misma red, pero utilizando únicamente 40 muestras. Además, se redujo el conjunto de testeo a 20 muestras. El entrenamiento se hizo mediante minibatches, es decir, calculando el gradiente y propagándolo hacia atrás para una pequeña porción de los datos cada vez. Cada época sigue pasando por todos los datos, pero lo hace de a bloques más pequeños que el conjunto completo. Esto tiene la ventaja de acelerar el aprendizaje, además de otorgarle cirta aleatoriedad que puede ayudar a salir de mínimos locales, pero esto mismo significa que la dirección de modificación de los pesos no es necesariamente opuesta al gradiente. Debido a este comportamiento, este método se conoce como gradiente descendente estocástico o _stochastic gradiente descent_.
+
+==== Entrenamiento por minibatch grande
+
+Inicialmente se entrenó la red con un _learning rate_ de 0.01, durante 1000 épocas, utilizando un minibatch de tamaño 40, es decir, de la totalidad de los datos. El error de entrenamiento y de testeo se muestra en la @fig:ej4_loss40. Como antes, se observa que la _loss_ cae monotónicamente, hasta alcanzarse un error relativamente bajo.
+
+#figure(
+  placement: auto,
+  image("img/ej4/loss_40.svg", width: 67%),
+  caption: [Entrenamiento de la red de 30 neuronas ocultas con 40 muestras en un único minibatch de tamaño 40.],
+) <fig:ej4_loss40>
+
+==== Entrenamiento por minibatch pequeño (_stochastic gradient descent_)
+
+Como contraste, se reentrenó la red con los mismos parámetros pero usando un minibatch de tamaño 1. Este es el caso más extremo de gradiente descendente estocástico, ya que se utiliza una única muestra cada vez para realizar el entrenamiento. La @fig:ej4_loss1 muestra cómo evoluciona el error de entrenamiento y testeo durante el aprendizaje. Debido a que el gradiente es estocástico y la red no siempre modifica sus pesos en la exacta dirección de máximo decrecimiento, vemos cierto ruido tanto en la _loss_ de entrenamiento como en la de evaluación. Es más notorio el efecto en testeo. Sin embargo, en promedio la red sigue corrigiendo sus pesos en una dirección correcta, por lo que puede aprender sin problemas y el error cae rápidamente.
+
+#figure(
+  placement: auto,
+  image("img/ej4/loss_1.svg", width: 67%),
+  caption: [Entrenamiento de la red de 30 neuronas ocultas con 40 muestras en minibatches de tamaño 1.],
+) <fig:ej4_loss1>
+
 // vim: lbr
