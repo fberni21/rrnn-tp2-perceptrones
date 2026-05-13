@@ -278,7 +278,7 @@ En la segunda parte del experimento se reentrenó la misma red, pero utilizando 
 
 ==== Entrenamiento por minibatch grande
 
-Inicialmente se entrenó la red con un _learning rate_ de 0.01, durante 1000 épocas, utilizando un minibatch de tamaño 40, es decir, de la totalidad de los datos. El error de entrenamiento y de testeo se muestra en la @fig:ej4_loss40. Como antes, se observa que la _loss_ cae monotónicamente, hasta alcanzarse un error relativamente bajo.
+Inicialmente se entrenó la red con un _learning rate_ de 0.01, durante 10000 épocas, utilizando un minibatch de tamaño 40, es decir, de la totalidad de los datos. El error de entrenamiento y de testeo se muestra en la @fig:ej4_loss40. Como antes, se observa que la _loss_ cae monotónicamente, hasta alcanzarse un error relativamente bajo. Sin embargo, vemos que el error de evaluación no llega a un valor tan bajo como el de entrenamiento. Dado que la red posee 30 neuronas, la cantidad de parámetros será bastante mayor a las 40 muestras de entrenameinto que se tienen. Por lo tanto, hay un alto riesgo de overfitting.
 
 #figure(
   placement: auto,
@@ -288,7 +288,7 @@ Inicialmente se entrenó la red con un _learning rate_ de 0.01, durante 1000 ép
 
 ==== Entrenamiento por minibatch pequeño (_stochastic gradient descent_)
 
-Como contraste, se reentrenó la red con los mismos parámetros pero usando un minibatch de tamaño 1. Este es el caso más extremo de gradiente descendente estocástico, ya que se utiliza una única muestra cada vez para realizar el entrenamiento. La @fig:ej4_loss1 muestra cómo evoluciona el error de entrenamiento y testeo durante el aprendizaje. Debido a que el gradiente es estocástico y la red no siempre modifica sus pesos en la exacta dirección de máximo decrecimiento, vemos cierto ruido tanto en la _loss_ de entrenamiento como en la de evaluación. Es más notorio el efecto en testeo. Sin embargo, en promedio la red sigue corrigiendo sus pesos en una dirección correcta, por lo que puede aprender sin problemas y el error cae rápidamente.
+Como contraste, se reentrenó la red con los mismos parámetros pero usando un minibatch de tamaño 1. Este es el caso más extremo de gradiente descendente estocástico, ya que se utiliza una única muestra cada vez para realizar el entrenamiento. La @fig:ej4_loss1 muestra cómo evoluciona el error de entrenamiento y testeo durante el aprendizaje. Debido a que el gradiente es estocástico y la red no siempre modifica sus pesos en la exacta dirección de máximo decrecimiento, vemos cierto ruido tanto en la _loss_ de entrenamiento como en la de evaluación. Es más notorio el efecto en testeo. Sin embargo, en promedio la red sigue corrigiendo sus pesos en una dirección correcta, por lo que puede aprender sin problemas y el error cae rápidamente. Los errores de evaluación y de entrenamiento obtenidos son menores que para el caso anterior. El ruido en la estimación del gradiente permite que la red escape de mínimos locales no óptimos. Nuevamente, se observa el ligero efecto de memorización dada la alta cantidad de parámetros respecto de la cantidad de muestras de entrenamiento, resultando en una _loss_ de entrenamiento no tan baja.
 
 #figure(
   placement: auto,
