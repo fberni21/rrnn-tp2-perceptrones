@@ -58,8 +58,6 @@
 #let sgn = math.op("sgn")
 #let erf = math.op("erf")
 
-= Introducción
-
 = Desarrollo
 
 == Implementación de funciones lógicas con un perceptrón simple
@@ -90,37 +88,43 @@ Por simplicidad, se tomó la entrada $-1$ como correspondiente al cero lógico. 
 
 Se entrenó primeramente un perceptrón simple con la tabla de verdad de la función AND. El modelo se entrenó con un número máximo de 20 épocas, y agregando un _early exit_ si el error se hacía nulo (en realidad, si era inferior a una tolerancia positiva pequeña). El _learning rate_ se estableció en $0.1$. La evolución del error cuadrático medio de entrenamiento durante la fase de entrenamiento se muestra en la @fig:and2d_boundary. Cada iteración se corresponde con una actualización de los pesos en base a una muestra. Dado que el conjunto de entrenamiento es la tabla de verdad completa ($N_p = 4$), cada cuatro iteraciones finaliza una época. Se observa que el error es inicialmente de 3, y va disminuyendo hasta anularse en la octava iteración ---luego de dos épocas---.
 
-#figure(
-  placement: auto,
-  image("img/ej1/and2d_mse.svg", width: 67%),
-  caption: [Evolución del error durante el entrenamiento de un perceptrón simple para la AND de dos entradas.],
-) <fig:and2d_mse>
+#grid(columns: 2, gutter: 1.5em,
+grid.cell([
+  #figure(
+    placement: auto,
+    image("img/ej1/and2d_mse.svg", width: 100%),
+    caption: [Evolución del error durante el entrenamiento de un perceptrón simple para la AND de dos entradas.],
+  ) <fig:and2d_mse>
+]), grid.cell([
+  #figure(
+    placement: auto,
+    image("img/ej1/and_boundary.svg", width: 67%),
+    caption: [Recta discriminadora y entradas clasificadas por el perceptrón para la AND de dos entradas.],
+  ) <fig:and2d_boundary>
+]))
 
 En la @fig:and2d_boundary se muestra la frontera de decisión dada por la recta discriminadora perpendicular al vector de los pesos resultantes del entrenamiento de la función AND, junto con las entradas al perceptrón coloreadas según la salida aprendida (en rojo las salidas $+1$; en azul, las $-1$). Se puede ver que la red fue capaz de aprender una frontera válida, algo esperable dado que el problema es linealmente separable.
-
-#figure(
-  placement: auto,
-  image("img/ej1/and_boundary.svg", width: 45%),
-  caption: [Recta discriminadora y entradas clasificadas por el perceptrón para la AND de dos entradas.],
-) <fig:and2d_boundary>
 
 === Función OR de dos entradas
 
 Similarmente, se repitió el experimento para un perceptrón simple entrenado sobre la función OR de dos entradas. Se utilizaron los mismo hiperparámetros que para el caso de la AND. El error cuadrático medio de entrenamiento se puede ver en la @fig:or2d_mse. Esta vez, comienza en 1 y se mantiene constante durante la primera época (hasta la iteración 4), hasta que finalmente en la quinta iteración converge a una solución con error nulo. Se entiende que esta vez el perceptrón comenzó con un conjunto de pesos que producía una única salida incorrecta, la cual produjo que se modificaran lentamente los pesos hasta su correcta clasificación.
 
-#figure(
-  placement: auto,
-  image("img/ej1/or2d_mse.svg", width: 67%),
-  caption: [Evolución del error durante el entrenamiento de un perceptrón simple para la OR de dos entradas.],
-) <fig:or2d_mse>
+#grid(columns: 2, gutter: 1.5em,
+grid.cell([
+  #figure(
+    placement: auto,
+    image("img/ej1/or2d_mse.svg", width: 100%),
+    caption: [Evolución del error durante el entrenamiento de un perceptrón simple para la OR de dos entradas.],
+  ) <fig:or2d_mse>
+]), grid.cell([
+  #figure(
+    placement: auto,
+    image("img/ej1/or_boundary.svg", width: 67%),
+    caption: [Recta discriminadora y entradas clasificadas por el perceptrón para la OR de dos entradas.],
+  ) <fig:or2d_boundary>
+]))
 
 En la @fig:or2d_boundary se muestra la frontera de decisión dada por la recta discriminadora perpendicular al vector de los pesos resultantes del entrenamiento de la función OR, junto con las entradas al perceptrón coloreadas según la salida aprendida. Nuevamente, se puede ver que la red fue capaz de aprender una frontera válida.
-
-#figure(
-  placement: auto,
-  image("img/ej1/or_boundary.svg", width: 45%),
-  caption: [Recta discriminadora y entradas clasificadas por el perceptrón para la OR de dos entradas.],
-) <fig:or2d_boundary>
 
 Observamos que en este caso (y, en menor medida, en el caso de la AND), la frontera encontrada está muy cerca de una de las muestras. Esto se debe a que no se incluyó ningún tipo de margen en el entrenamiento, por lo que una frontera puede estar extremadamente cerca de clasificar incorrectamente a una muestra y aún así ser considerada solución. En este caso donde las entradas son binarias, no hay ningún problema con este resultado. Si se tratara de datos continuos potencialmente afectado por ruido, una frontera tan cercana a una muestra de entrenamiento podría provocar errores si posteriormente se encuentra con muestras ligeramente perturbadas.
 
@@ -132,7 +136,7 @@ El error de entrenamiento del perceptrón para la función AND de cuatro entrada
 
 #figure(
   placement: auto,
-  image("img/ej1/and4d_mse.svg", width: 67%),
+  image("img/ej1/and4d_mse.svg", width: 50%),
   caption: [Evolución del error durante el entrenamiento de un perceptrón simple para la AND de cuatro entradas.],
 ) <fig:and4d_mse>
 
@@ -148,7 +152,7 @@ El error de entrenamiento del perceptrón para la función OR de cuatro entradas
 
 #figure(
   placement: auto,
-  image("img/ej1/or4d_mse.svg", width: 67%),
+  image("img/ej1/or4d_mse.svg", width: 50%),
   caption: [Evolución del error durante el entrenamiento de un perceptrón simple para la OR de cuatro entradas.],
 ) <fig:or4d_mse>
 
@@ -167,7 +171,7 @@ Los resultados se muestran en la @fig:capacidad, en función de la cantidad rela
 
 #figure(
   placement: auto,
-  image("img/ej2/capacidad.svg", width: 67%),
+  image("img/ej2/capacidad.svg", width: 50%),
   caption: [Probabilidad de convergencia del aprendizaje en función de la cantidad relativa $N_p slash N$ de patrones enseñados, simulado para $N=30$.],
 ) <fig:capacidad>
 
@@ -199,19 +203,22 @@ Es sabido que la función XOR no es linealmente separable, y que además requier
 
 La evolución de la _loss_ se muestra en la @fig:xor2loss. Notar que tras una abrupta disminución del error en las primeras épocas, el entrenamiento se topa con una sección donde el gradiente del error se hace pequeño. El error disminuye muy poco hasta alrededor de la época 800, donde empieza a disminuir más rápidamente. Alrededor de la época 2000, un gradiente favorable hace el error caiga rápidamente y se acerque asintóticamente a cero.
 
-#figure(
-  placement: auto,
-  image("img/ej3/loss2.svg", width: 67%),
-  caption: [Evolución del error del perceptrón multicapa para el aprendizaje de la XOR de dos entradas],
-) <fig:xor2loss>
+#grid(columns: 2, gutter: 1.5em,
+grid.cell([
+  #figure(
+    placement: auto,
+    image("img/ej3/loss2.svg", width: 100%),
+    caption: [Evolución del error del perceptrón multicapa para el aprendizaje de la XOR de dos entradas],
+  ) <fig:xor2loss>
+]), grid.cell([
+  #figure(
+    placement: auto,
+    image("img/ej3/decision2.svg", width: 67%),
+    caption: [Fronteras de decisión de la función XOR de dos entradas, aprendidas por el perceptrón multicapa.],
+  ) <fig:xor2boundary>
+]))
 
 La @fig:xor2boundary muestra las fronteras de decisión que aprendió el MLP para clasificar las muestras de la función XOR. Las fronteras se corresponden con las líneas donde la salida es $0.5$. Aquellas muestras que caen en sectores rojos (salida $>0.5$), se toman como $1$, mientras que las de la zona azul (salida $<0.5$) se clasifican como $0$. La red fue capaz de aprender correctamente la función XOR de dos entradas. Las salidas tomadas como $1$ se corresponden con valores de alrededor de $0.95$, mientras que las tomadas como $0$ rondaban $0.05$.
-
-#figure(
-  placement: auto,
-  image("img/ej3/decision2.svg", width: 45%),
-  caption: [Fronteras de decisión de la función XOR de dos entradas, aprendidas por el perceptrón multicapa.],
-) <fig:xor2boundary>
 
 === Función XOR de cuatro entradas (función de paridad)
 
@@ -223,7 +230,7 @@ La evolución del error o _loss_ durante el entrenamiento se muestra en la @fig:
 
 #figure(
   placement: auto,
-  image("img/ej3/loss4.svg", width: 67%),
+  image("img/ej3/loss4.svg", width: 50%),
   caption: [Evolución del error del perceptrón multicapa para el aprendizaje de la XOR de cuatro entradas],
 ) <fig:xor4loss>
 
@@ -247,7 +254,7 @@ La @fig:ej4_loss muestra el error de entrenamiento y de testeo (evaluación) dur
 
 #figure(
   placement: auto,
-  image("img/ej4/loss.svg", width: 67%),
+  image("img/ej4/loss.svg", width: 50%),
   caption: [Errores de entrenamiento y evaluación para el entrenamiento de un MLP con una capa oculta de 30 neuronas sobre la función $f(x,y,z) = sin(x) + cos(y) + z$.],
 ) <fig:ej4_loss>
 
@@ -259,14 +266,14 @@ Como segunda forma de comparación, se evaluó la función en el subconjunto $(x
 grid.cell([
   #figure(
     placement:auto,
-    image("img/ej4/prediction.svg"),
+    image("img/ej4/prediction.svg", width:75%),
     caption: [Salidas de la red en función de las salidas esperadas para el conjunto de testeo, en azul. Resultado ideal esperado, en naranja.],
   ) <fig:ej4_pred>
 ]),
 grid.cell([
   #figure(
     placement:auto,
-    image("img/ej4/output.svg"),
+    image("img/ej4/output.svg", width:75%),
     caption: [Salida esperada (naranja) y obtenida (azul) por la red para un _slice_ de $f(x,y,z)$, donde $y=pi$,\ $z=0.5$, y $x in [0, 2 pi]$.],
   ) <fig:ej4_out>
 ])
@@ -282,7 +289,7 @@ Inicialmente se entrenó la red con un _learning rate_ de 0.05, durante 10000 é
 
 #figure(
   placement: auto,
-  image("img/ej4/loss_40.svg", width: 67%),
+  image("img/ej4/loss_40.svg", width: 50%),
   caption: [Entrenamiento de la red de 30 neuronas ocultas con 40 muestras en un único minibatch de tamaño 40.],
 ) <fig:ej4_loss40>
 
@@ -292,7 +299,7 @@ Como contraste, se reentrenó la red con los mismos parámetros pero usando un m
 
 #figure(
   placement: auto,
-  image("img/ej4/loss_1.svg", width: 67%),
+  image("img/ej4/loss_1.svg", width: 50%),
   caption: [Entrenamiento de la red de 30 neuronas ocultas con 40 muestras en minibatches de tamaño 1.],
 ) <fig:ej4_loss1>
 
