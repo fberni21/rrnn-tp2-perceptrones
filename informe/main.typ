@@ -303,4 +303,26 @@ Como contraste, se reentrenó la red con los mismos parámetros pero usando un m
   caption: [Entrenamiento de la red de 30 neuronas ocultas con 40 muestras en minibatches de tamaño 1.],
 ) <fig:ej4_loss1>
 
+== Reconstrucción de imágenes con Máquina Restringida de Boltzmann
+
+En este experimento se entrenó una Máquina Restringida de Boltzmann (RBM) para que sea capaz de reconstruir imágenes del conjunto de datos MNIST. Se evaluó la similitud de la reconstrucción con las imágenes originales para diferentes tamaños de capa oculta. La capa visible consiste de 784 neuronas pues la entrada es una imagen de $28 times 28$ píxeles, y cada neurona es continua en el intervalo $[0, 1]$, correspondiéndose con los posibles valores de escala de grises de cada píxel.
+
+En particular, se entrenaron tres RBM, con capas ocultas de 50, 20 y 2 neuronas. Se utilizó el dataset completo de 60,000 muestras de entrenamiento del conjunto, y se evaluó su desempeño utilizando las 10,000 muestras de testeo. El entrenamiento se hizo con _learning rates_ de 0.1, 0.05, y 0.01, para las redes de 50, 20 y 2 neuronas ocultas, respectivamente. En todos los casos, se entrenó durante 10 épocas. A modo ilustrativo, se muestra en la @fig:rbm_error el error de entrenamiento y de evaluación para el caso de la red con 50 neuronas ocultas. Se observa que tanto el error de reconstrucción de entrenamiento como el de evaluación decrecen monotónicamente, hasta establecerse en valores similares.
+
+#figure(
+  placement: auto,
+  image("img/ej5/error_50.svg", width: 50%),
+  caption: [Errores de entrenamiento y evaluación de una RBM con una capa oculta de 50 neuronas entrenada sobre el conjunto de datos MNIST.],
+) <fig:rbm_error>
+
+En la @fig:rbm_reconst se muestran ejemplos de reconstrucción de diferentes dígitos del conjunto de testeo, para las tres redes entrenadas. La reconstrucción es muy fiel para el caso del RBM con 50 neuronas ocultas, logrando que todos los ejemplos sean reconocibles. Para la red con 20 neuronas ocultas, algunos dígitos comienzan a confundirse: por ejemplo, el 3 y el 5 se reconstruyen pareciendo un 8. Para la red con apenas 2 neuronas ocultas, las reconstrucciones son ininteligibles salvo casos puntuales como el 0. Esto se refleja en los errores de reconstrucción de evaluación: la red con 50 neuronas ocultas tiene un error de 0.0226, mientras que en la de 20 neuronas crece a 0.0385, y 0.0634 para la que solo tiene 2 neuronas.
+
+Es interesante notar que las reconstrucciones son generalmente versiones "borrosas" de las originales, efecto que se hace más notorio cuanto más chica sea la capa oculta. Para el caso de una red muy chica (la red de dos neuronas ocultas), la salida es prácticamente la misma independientemente de la entrada, y aparenta ser un "promedio" de todos los dígitos de entrenamiento. Esto es lógico puesto que si la red no tiene suficiente capacidad, su mejor chance es aprender un promedio de las imágenes deseadas, para minimizar el error dentro de sus posiblidades.
+
+#figure(
+  placement: auto,
+  image("img/ej5/reconstructions.svg", width: 100%),
+  caption: [Ejemplos del conjunto de testeo de MNIST reconstruidos con RBM, empleando diferentes tamaños de capa oculta (50, 20 y 2).],
+) <fig:rbm_reconst>
+
 // vim: lbr
