@@ -1,6 +1,6 @@
 #set page(
   paper: "a4",
-  margin: (x: 2cm, y: 1.5cm),
+  margin: (x: 2.5cm, y: 2cm),
   numbering: "1",
   header: context {
     if counter(page).get().first() > 1 [
@@ -317,12 +317,26 @@ En particular, se entrenaron tres RBM, con capas ocultas de 50, 20 y 2 neuronas.
 
 En la @fig:rbm_reconst se muestran ejemplos de reconstrucción de diferentes dígitos del conjunto de testeo, para las tres redes entrenadas. La reconstrucción es muy fiel para el caso del RBM con 50 neuronas ocultas, logrando que todos los ejemplos sean reconocibles. Para la red con 20 neuronas ocultas, algunos dígitos comienzan a confundirse: por ejemplo, el 3 se reconstruye pareciendo un 8, mientras que el 4 parece un 9. El 6 se vuelve indistinguible, mientras que el 0, el 1 y el 7 se ven muy bien. Para la red con apenas 2 neuronas ocultas, las reconstrucciones son ininteligibles salvo casos puntuales como el 0 y el 1. Esto se refleja en los errores de reconstrucción de evaluación: la red con 50 neuronas ocultas tiene un error de 0.021, mientras que en la de 20 neuronas crece a 0.036, y 0.062 para la que solo tiene 2 neuronas.
 
-Es interesante notar que las reconstrucciones son generalmente versiones "borrosas" de las originales, efecto que se hace más notorio cuanto más chica sea la capa oculta. Para el caso de una red muy chica (la red de dos neuronas ocultas), la salida es prácticamente la misma independientemente de la entrada, y aparenta ser un "promedio" de todos los dígitos de entrenamiento. Esto es lógico puesto que si la red no tiene suficiente capacidad, su mejor chance es aprender un promedio de las imágenes deseadas, para minimizar el error dentro de sus posiblidades.
-
 #figure(
   placement: auto,
   image("img/ej5/reconstructions.svg", width: 100%),
   caption: [Ejemplos del conjunto de testeo de MNIST reconstruidos con RBM, empleando diferentes tamaños de capa oculta (50, 20 y 2).],
 ) <fig:rbm_reconst>
+
+Es interesante notar que las reconstrucciones son generalmente versiones "borrosas" de las originales, efecto que se hace más notorio cuanto más chica sea la capa oculta. Para el caso de una red muy chica (la red de dos neuronas ocultas), la salida es prácticamente la misma independientemente de la entrada, y aparenta ser un "promedio" de todos los dígitos de entrenamiento. Esto es lógico puesto que si la red no tiene suficiente capacidad, su mejor chance es aprender un promedio de las imágenes deseadas, para minimizar el error dentro de sus posiblidades.
+
+== Clasificación de dígitos manuscritos con Redes Neuronales Convolucionales
+
+En esta sección se buscó entrenar una red convolucional sobre el conjunto de datos MNIST. El objetivo fue encontrar la CNN lo más pequeña posible que fuera capaz de obtener una exactitud de al menos 90 % sobre el conjunto de evaluación. La arquitectura utilizada fue la más sencilla posible: un conjunto de _feature maps_ convolucionales que operan sobre la imagen de entrada, seguida de una capa de _max pooling_, y finalmente una capa _fully connected_ de diez neuronas, que deben codificar al dígito correspondiente en la entrada. Luego de varias pruebas, se ajustaron los tamaños de la aruitectura hasta llegar a la mostrada en la @fig:cnn_small. La misma tiene dos kernels de convolución en su primera capa, de tamaño $5 times 5$, seguidos de una capa de _max pool_ que opera sobre áreas de tamaño $6 times 6$, y finalmente una capa _fully connected_ que toma las 32 salidas de la capa anterior. La capa convolucional tiene activación ReLU, mientras que la última tiene activación sigmoide. La red tiene 382 parámetros entrenables.
+
+#figure(
+  placement: auto,
+  image("img/ej6/cnn_small.svg", width: 75%),
+  caption: [Red neuronal convolucional pequeña que consigue un _accuracy_ mayor al 90 % sobre el conjunto de evaluación de MNIST.],
+) <fig:cnn_small>
+
+Se obtuvo un _accuracy_ del 91.71 % sobre el conjunto de evaluación. Esto es notable, puesto que un perceptrón multicapa necesitaría, como mínimo, 784 pesos para poder conectar una única neurona a todos los píxeles de la entrada. Incluso, así solo sería capaz de resolver una tarea de clasificación binaria (por ejemplo, determinar si el número es par o impar), mucho más sencilla que la tarea que resuelve esta CNN. Para la tarea de clasificar entre los 10 posibles dígitos, una red MLP requeriría mínimo diez neuronas, con 748 pesos más un sesgo cada una, lo que elevaría el número de parámetros entrenables a 7850. Se probó esta red, utilizando activación sigmoide, y se obtuvo una exactitud de evaluación similar, del 91.47 %.
+
+Se concluye que las redes neuronales convolucionales son una herramienta muy potente para la clasificación de imágenes. Se logró entrenar una CNN con un _accuracy_ respetable del 91.71 %, utilizando una red con 20 veces menos parámetros que los necesarios para obtener un resultado similar en un MLP.
 
 // vim: lbr
