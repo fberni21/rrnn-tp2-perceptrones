@@ -339,4 +339,17 @@ Se obtuvo un _accuracy_ del 93.9 % sobre el conjunto de evaluación. Esto es not
 
 Se concluye que las redes neuronales convolucionales son una herramienta muy potente para la clasificación de imágenes. Se logró entrenar una CNN con un _accuracy_ respetable del 93.9 %, utilizando una red con 20 veces menos parámetros que los necesarios para obtener un resultado similar en un MLP.
 
+== Clasificación de dígitos manuscritos a partir de representación con autoencoder
+
+
+
+#figure(
+  placement: auto,
+  image("img/ej7/reconstructions.svg", width: 100%),
+  caption: [Ejemplos del conjunto de testeo de MNIST reconstruidos con un autoencoder de 30 dimensiones.],
+) <fig:autoencoder_reconst>
+
+// 14.62 v 45.66
+// 92.35% v 91.15%
+
 // vim: lbr
