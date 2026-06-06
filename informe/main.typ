@@ -53,14 +53,12 @@
 
 #v(2em)
 #align(center)[#smallcaps[Resumen]]
-#text(style: "italic")[]
+#text(style: "italic")[Este trabajo presenta un estudio comparativo de arquitecturas de redes neuronales artificiales, abarcando desde los fundamentos del Perceptrón Simple hasta modelos avanzados de aprendizaje profundo. En primer lugar, se evalúan las limitaciones teóricas y la capacidad de almacenamiento del clasificador lineal ante funciones lógicas y patrones estocásticos. Posteriormente, se implementa el algoritmo de Backpropagation en Perceptrones Multicapa (MLP) para resolver problemas no lineales y aproximar funciones continuas, analizando el impacto de la dinámica de los minibatches. Finalmente, se abordan tareas de alta dimensionalidad sobre el conjunto de datos MNIST mediante Máquinas Restringidas de Boltzmann (RBM), Redes Neuronales Convolucionales (CNN) y Autoencoders. Los resultados demuestran la superioridad de las CNNs en eficiencia computacional ---alcanzando un 93.9 % de precisión con 20 veces menos parámetros que un MLP--- y validan la utilidad de los Autoencoders en la reducción de dimensionalidad, logrando acelerar el entrenamiento del clasificador en un 95 % con un incremento en la exactitud.]
 
 #let sgn = math.op("sgn")
 #let erf = math.op("erf")
 
-= Desarrollo
-
-== Implementación de funciones lógicas con un perceptrón simple
+= Implementación de funciones lógicas con un perceptrón simple
 
 En primer lugar se implementó un perceptrón simple con salidas booleanas ($plus.minus 1$), con el objetivo de entrenarlo sobre funciones lógicas. En particular, se estudió el desempeño del perceptrón sobre las funciones AND y OR, de las cuales se tiene garantía de hallar una solución puesto que son linealmente separables. Como función de activación se utilizó la función signo dada por
 $ sgn(x) = cases( +1 "si" x gt.eq 0, -1 "si" x lt 0) space . $
@@ -84,7 +82,7 @@ Por simplicidad, se tomó la entrada $-1$ como correspondiente al cero lógico. 
   caption: figure.caption(position: top, [Tabla de verdad de las funciones AND y OR de dos entradas.]),
 ) <tab:verdad>
 
-=== Función AND de dos entradas
+== Función AND de dos entradas
 
 Se entrenó primeramente un perceptrón simple con la tabla de verdad de la función AND. El modelo se entrenó con un número máximo de 20 épocas, y agregando un _early exit_ si el error se hacía nulo (en realidad, si era inferior a una tolerancia positiva pequeña). El _learning rate_ se estableció en $0.1$. La evolución del error cuadrático medio de entrenamiento durante la fase de entrenamiento se muestra en la @fig:and2d_mse. Cada iteración se corresponde con una actualización de los pesos en base a una muestra. Dado que el conjunto de entrenamiento es la tabla de verdad completa ($N_p = 4$), cada cuatro iteraciones finaliza una época. Se observa que el error es inicialmente de 3, y va disminuyendo hasta anularse en la octava iteración ---luego de dos épocas---.
 
@@ -105,7 +103,7 @@ grid.cell([
 
 En la @fig:and2d_boundary se muestra la frontera de decisión dada por la recta discriminadora perpendicular al vector de los pesos resultantes del entrenamiento de la función AND, junto con las entradas al perceptrón coloreadas según la salida aprendida (en rojo las salidas $+1$; en azul, las $-1$). Se puede ver que la red fue capaz de aprender una frontera válida, algo esperable dado que el problema es linealmente separable.
 
-=== Función OR de dos entradas
+== Función OR de dos entradas
 
 Similarmente, se repitió el experimento para un perceptrón simple entrenado sobre la función OR de dos entradas. Se utilizaron los mismo hiperparámetros que para el caso de la AND. El error cuadrático medio de entrenamiento se puede ver en la @fig:or2d_mse. Esta vez, comienza en 1 y se mantiene constante durante la primera época (hasta la iteración 4), hasta que finalmente en la quinta iteración converge a una solución con error nulo. Se entiende que esta vez el perceptrón comenzó con un conjunto de pesos que producía una única salida incorrecta, la cual produjo que se modificaran lentamente los pesos hasta su correcta clasificación.
 
@@ -126,9 +124,9 @@ grid.cell([
 
 En la @fig:or2d_boundary se muestra la frontera de decisión dada por la recta discriminadora perpendicular al vector de los pesos resultantes del entrenamiento de la función OR, junto con las entradas al perceptrón coloreadas según la salida aprendida. Nuevamente, se puede ver que la red fue capaz de aprender una frontera válida.
 
-Observamos que en este caso (y, en menor medida, en el caso de la AND), la frontera encontrada está muy cerca de una de las muestras. Esto se debe a que no se incluyó ningún tipo de margen en el entrenamiento, por lo que una frontera puede estar extremadamente cerca de clasificar incorrectamente a una muestra y aún así ser considerada solución. En este caso donde las entradas son binarias, no hay ningún problema con este resultado. Si se tratara de datos continuos potencialmente afectado por ruido, una frontera tan cercana a una muestra de entrenamiento podría provocar errores si posteriormente se encuentra con muestras ligeramente perturbadas.
+Observamos que en este caso (y, en menor medida, en el caso de la AND), la frontera encontrada está muy cerca de una de las muestras. Esto se debe a que no se incluyó ningún tipo de margen en el entrenamiento, por lo que una frontera puede estar extremadamente cerca de clasificar incorrectamente a una muestra y aún así ser considerada solución. En este caso donde las entradas son binarias, no hay ningún problema con este resultado. Si se tratara de datos continuos potencialmente afectados por ruido, una frontera tan cercana a una muestra de entrenamiento podría provocar errores si posteriormente se encuentra con muestras ligeramente perturbadas.
 
-=== Función AND de cuatro entradas
+== Función AND de cuatro entradas
 
 Para analizar el comportamiento del perceptrón simple frente a más entradas, se procedió a estudiar la compuerta AND de cuatro entradas. Como extensión de la AND de dos entradas, la salida de la AND de cuatro entradas será $+1$ únicamente si todas sus cuatro entradas $X_1 = X_2 = X_3 = X_4 = +1$, y $-1$ en cualquier otro caso. El entrenamiento se realizó con los mismos hiperparámetros que para las funciones de dos entradas. En este caso, como hay $N_p = 2^4 = 16$ patrones diferentes, una época consiste de 16 iteraciones.
 
@@ -144,7 +142,7 @@ También es interesante notar que el entrenamiento tarda más en cantidad de ite
 
 No se muestra un gráfico de la frontera de decisión ya que la misma es un hiperplano 3-dimensional embebido en el espacio 4-dimensional de las entradas, lo que imposibilita su representación. En forma intuitiva, el resultado se espera que sea similar al visto para el caso de dos entradas: un "plano" que separa la única entrada de resultado $+1$ (correspondiente a los $X_j = +1$), de las demás entradas cuya salida es $-1$.
 
-=== Función OR de cuatro entradas
+== Función OR de cuatro entradas
 
 Análogamente, se entrenó un perceptrón simple con la función lógica OR de cuatro entradas.La extensión corresponde a tomar como salida $-1$ únicamente si todas las entradas $X_1 = X_2 = X_3 = X_4 = -1$, y como $+1$ en el resto de los casos. Se utilizaron los mismos hiperparámetros que para la AND.
 
@@ -156,14 +154,14 @@ El error de entrenamiento del perceptrón para la función OR de cuatro entradas
   caption: [Evolución del error durante el entrenamiento de un perceptrón simple para la OR de cuatro entradas.],
 ) <fig:or4d_mse>
 
-== Capacidad del perceptrón simple
+= Capacidad del perceptrón simple
 
 La capacidad del perceptrón simple puede definirse como la máxima cantidad de patrones aleatorios que pueden enseñarse al perceptrón y que el mismo aún sea capaz de encontrar un hiperplano que separe las salidas deseadas $-1$ de las $+1$. Es decir, se busca la máxima cantidad de puntos tales que el problema a entrenar sea linealmente separable. Con gran trabajo, puede demostrarse que para $N arrow infinity$ la cantidad de patrones que pueden aprenderse es
 $ N_(p, max) = 2 N, $
 o sea, la capacidad relativa del perceptrón es
 $ C = N_(p, max) / N = 2. $
 
-Entonces, para $N$ grande, se espera que el perceptrón _siempre_ converja si la cantidad de puntos aleatorios enseñados es menor que $2 N$, y que _nunca_ halle tal solución si es mayor que dicho límite. En la realidad, para valores de $N$ finitos, se observará que la probabilidad de hallar una solución es alta para valores de $N_p$ pequeños, y caerá en forma aproximadamente sigmoide hacia cero, valiendo alrededor de $0.5$ en $N_p = 2 N$. Cuanto más grande sea $N$, más abrupta será la transición.
+Entonces, para $N$ grande, se espera que el perceptrón _siempre_ converja si la cantidad de puntos aleatorios enseñados es menor que $2 N$, y que _nunca_ halle tal solución si es mayor que dicho límite. En la realidad, para valores de $N$ finitos, se observará que la probabilidad de hallar una solución es alta para valores de $N_p$ pequeños, y caerá con forma sigmoide hacia cero, valiendo alrededor de $0.5$ en $N_p = 2 N$. Cuanto más grande sea $N$, más abrupta será la transición.
 
 Para mostrar esto, se entrenó un perceptrón simple de $N=30$ entradas, con una cantidad creciente de patrones entre $N_p = 1$ y $N_p = 3 N$. Los patrones son puntos aleatorios uniformes en el hipercubo $[-1, 1]^N$, y sus salidas deseadas son al azar $plus.minus 1$. Se repitió el experimento 20 veces, notando la cantidad de pruebas en la que el perceptrón convergió a una solución de error nulo, antes de llegar a un número máximo de épocas establecido en 1000. Para cada valor de $N_p$ se obtuvo entonces una estimación de la probabilidad de que el entrenamiento converja. El _learning rate_ se estableció en $0.01$.
 
@@ -177,7 +175,7 @@ Los resultados se muestran en la @fig:capacidad, en función de la cantidad rela
 
 No se calculó la capacidad para valores superiores de $N$ dado que el cómputo tardaba demasiado tiempo.
 
-== Implementación de XOR con un perceptrón multicapa
+= Implementación de XOR con un perceptrón multicapa
 
 Para abordar problemas de mayor complejidad que no son linealmente separables, como la función XOR, se implementó un perceptrón multicapa o MLP (por sus siglas en inglés). El MLP implementado realiza la actualización de los pesos por gradiente descendente y _error backpropagation_, modificando los pesos en _batch_. En particular, se usaron _full batches_, lo que significa que se procesa todo el conjunto de datos de entrenamiento completo durante una época, se calcula el gradiente promedio, y se actualizan los pesos al final de la época en función de dicho gradiente promediado.
 
@@ -195,7 +193,7 @@ donde $hat(y)_i$ es la salida de la red para el $i$-ésimo patrón, mientras que
 
 Los pesos fueron iniciados con valores aleatorios i.i.d. normales estándar.
 
-=== Función XOR de dos entradas
+== Función XOR de dos entradas
 
 En primer lugar, se entrenó un perceptrón para que aprenda la función XOR de dos entradas. Esta función vale $1$ si alguna entrada, pero no ambas, vale $1$. Si ninguna o ambas son $1$, entonces devuelve $0$. Otra forma de verlo, que servirá para entender la extensión a múltiples entradas, es que devuelve $1$ si la cantidad de entradas en $1$ es impar, y $0$ si es par.
 
@@ -220,7 +218,7 @@ grid.cell([
 
 La @fig:xor2boundary muestra las fronteras de decisión que aprendió el MLP para clasificar las muestras de la función XOR. Las fronteras se corresponden con las líneas donde la salida es $0.5$. Aquellas muestras que caen en sectores rojos (salida $>0.5$), se toman como $1$, mientras que las de la zona azul (salida $<0.5$) se clasifican como $0$. La red fue capaz de aprender correctamente la función XOR de dos entradas. Las salidas tomadas como $1$ se corresponden con valores de alrededor de $0.95$, mientras que las tomadas como $0$ rondaban $0.05$.
 
-=== Función XOR de cuatro entradas (función de paridad)
+== Función XOR de cuatro entradas (función de paridad)
 
 El siguiente experimento consistió del entrenamiento de un MLP sobre una función XOR de cuatro entradas. Como se mencionó anteriormente, esta generalización consiste en contar la cantidad de entradas que valen $1$, y devolviendo como salida $1$ si la cuenta es impar, o $0$ si es par. Por este motivo, la función XOR generalizada se suele llamar función de paridad.
 
@@ -238,7 +236,7 @@ Debido a la mayor complejidad de la función a aprender y de la mayor cantidad d
 
 Se verificó que tras la convergencia, la red es capaz de evaluar correctamente la función XOR de cuatro entradas. Para ello, nuevamente se tomó como $1$ aquellas salidas cuyo valor es $>0.5$, y como $0$ si son menores. Aún así, se destaca que las salidas categorizadas como $1$ rondaban valores de $0.9$ y mayores, mientras que las salidas $0$ rondaban $0.1$ y menos.
 
-== Implementación de una función continua con perceptrón multicapa
+= Implementación de una función continua con perceptrón multicapa
 
 Este experimento consistió del entrenamiento de un perceptrón multicapa utilizando _backpropagation_, para el aprendizaje de un campo escalar continuo definido por
 $ f(x,y,z) = sin(x) + cos(y) + z, $
@@ -246,11 +244,11 @@ con $(x,y) in [0, 2 pi]^2$ y $z in [-1, 1]$.
 
 En todos los casos, la red utilizada posee tres entradas para las variables $(x, y, z)$, una capa oculta de 30 neuronas con activación sigmoide, y una única neurona de salida con activación lineal. La activación lineal es necesaria para que la red pueda ser capaz de tener a su salida valores en el rango de $[-3, 3]$ (el dominio de $f$), dado que no estamos en un problema de clasificación o de respuestas discretas, como anteriormente.
 
-=== Entrenamiento de un perceptrón multicapa con muchas muestras
+== Entrenamiento de un perceptrón multicapa con muchas muestras
 
 En primer lugar, se entrenó a la red descripta anteriormente utilizando un conjunto de datos de 1000 muestras, de las cuales 900 se usaron para el entrenamiento _per se_, y las restantes 100 como validación. Las muestras se generaron aleatoriamente, escogiendo uniformemente valores de las tres entradas dentro del dominio de la función, y evaluando su resultado. El entrenamiento se realizó en un único batch, con una tasa de aprendizaje de 0.05, durante 10000 épocas.
 
-La @fig:ej4_loss muestra el error de entrenamiento y de validación durante el entrenamiento. Se observa cómo la red disminuye su error conforme pasan las épocas, inicialmente a una velocidad rápida y luego en forma más lenta. Tanto para el entrenamiento como la validación, el error decrece monotónicamente, y es similar en ambos casos, lo que sugiere que no hay _overfitting_. Esto es esperable pues hay muchas más muestras de entrenamiento (900) que parámetros (151#footnote([Cantidad de parámetros entrenables: $(3 times 30 + 30) + (30 times 1 + 1) = 151$.])).
+La @fig:ej4_loss muestra el error de entrenamiento y de validación durante el entrenamiento. Se observa cómo la red disminuye su error conforme pasan las épocas, inicialmente a una velocidad rápida y luego en forma más lenta. Tanto para el entrenamiento como la validación, el error decrece monotónicamente, y es similar en ambos casos (entrenamiento: 0.054; evaluación: 0.042), lo que sugiere que no hay _overfitting_. Esto es esperable pues hay muchas más muestras de entrenamiento (900) que parámetros (151#footnote([Cantidad de parámetros entrenables: $(3 times 30 + 30) + (30 times 1 + 1) = 151$.])).
 
 #figure(
   placement: auto,
@@ -258,7 +256,7 @@ La @fig:ej4_loss muestra el error de entrenamiento y de validación durante el e
   caption: [Errores de entrenamiento y validación para el entrenamiento de un MLP con una capa oculta de 30 neuronas sobre la función $f(x,y,z) = sin(x) + cos(y) + z$.],
 ) <fig:ej4_loss>
 
-Para comparar la salida real con la aprendida por la red, se graficaron las salidas de la red en función de las esperadas para cada una de las muestras de validación. El resultado se observa en la @fig:ej4_pred. Si la red aprende perfectamente la función, el resultado esperado es que las muestras se alineen sobre una recta de pendiente unitaria (naranja), es decir, que las salidas esperadas y las reales coinciden. Vemos que el comportamiento de la red es correcto, ya que las muestras (azul) tienden a tener valores similares a los esperados, encontrándose cerca de la recta identidad.
+Para comparar la salida real con la aprendida por la red, se graficaron las salidas de la red en función de las esperadas para cada una de las muestras de validación. El resultado se observa en la @fig:ej4_pred. Si la red aprendiera perfectamente la función, el resultado esperado sería que las muestras se alineen sobre una recta de pendiente unitaria (naranja), es decir, que las salidas esperadas y las reales coinciden. Vemos que el comportamiento de la red es correcto, ya que las muestras (azul) tienden a tener valores similares a los esperados, encontrándose cerca de la recta identidad.
 
 Como segunda forma de comparación, se evaluó la función en el subconjunto $(x, y, z) = (x, pi, 0.5)$. La @fig:ej4_out muestra el valor esperado (naranja) y el valor evaluado por la red (azul) en este subconjunto. La red es relativamente capaz de aprender las curvas de la función resultante, aunque tiene más problemas para representar el valle de la función seno en estos valores.
 
@@ -274,18 +272,18 @@ grid.cell([
   #figure(
     placement:auto,
     image("img/ej4/output.svg", width:75%),
-    caption: [Salida esperada (naranja) y obtenida (azul) por la red para un _slice_ de $f(x,y,z)$, donde $y=pi$,\ $z=0.5$, y $x in [0, 2 pi]$.],
+    caption: [Salida esperada (naranja) y obtenida (azul) por la red para un _slice_ de $f(x,y,z)$, donde $y=pi$, $z=0.5$, y $x in [0, 2 pi]$.],
   ) <fig:ej4_out>
 ])
 )
 
-=== Efectos del tamaño del minibatch
+== Efectos del tamaño del minibatch
 
 En la segunda parte del experimento se reentrenó la misma red, pero utilizando únicamente 40 muestras. Además, se redujo el conjunto de validación a 20 muestras. El entrenamiento se hizo mediante minibatches, es decir, calculando el gradiente y propagándolo hacia atrás para una pequeña porción de los datos cada vez. Cada época sigue pasando por todos los datos, pero lo hace de a bloques más pequeños que el conjunto completo. Esto tiene la ventaja de acelerar el aprendizaje, además de otorgarle cirta aleatoriedad que puede ayudar a salir de mínimos locales, pero esto mismo significa que la dirección de modificación de los pesos no es necesariamente opuesta al gradiente. Debido a este comportamiento, este método se conoce como gradiente descendente estocástico o _stochastic gradient descent_.
 
-==== Entrenamiento por minibatch grande
+=== Entrenamiento por minibatch grande
 
-Inicialmente se entrenó la red con un _learning rate_ de 0.05, durante 10000 épocas, utilizando un minibatch de tamaño 40, es decir, de la totalidad de los datos. El error de entrenamiento y de validación se muestra en la @fig:ej4_loss40. Como antes, se observa que la _loss_ cae monotónicamente, hasta alcanzarse un error relativamente bajo. Sin embargo, vemos que el error de validación no llega a un valor tan bajo como el de entrenamiento. Dado que la red posee 30 neuronas, la cantidad de parámetros será bastante mayor a las 40 muestras de entrenamiento que se tienen. Por lo tanto, hay un alto riesgo de overfitting. La red no tiene la "necesidad" de generalizar puesto que puede memorizar los datos de entrenamiento.
+Inicialmente se entrenó la red con un _learning rate_ de 0.05, durante 10000 épocas, utilizando un minibatch de tamaño 40, es decir, de la totalidad de los datos. El error de entrenamiento y de validación se muestra en la @fig:ej4_loss40. Como antes, se observa que la _loss_ cae monotónicamente, hasta alcanzarse un error relativamente bajo. Sin embargo, vemos que el error de validación (0.164) no llega a un valor tan bajo como el de entrenamiento (0.042). Dado que la red posee 30 neuronas, la cantidad de parámetros será bastante mayor a las 40 muestras de entrenamiento que se tienen. Por lo tanto, hay un alto riesgo de overfitting. La red no tiene la "necesidad" de generalizar puesto que puede memorizar los datos de entrenamiento.
 
 #figure(
   placement: auto,
@@ -293,9 +291,9 @@ Inicialmente se entrenó la red con un _learning rate_ de 0.05, durante 10000 é
   caption: [Entrenamiento de la red de 30 neuronas ocultas con 40 muestras en un único minibatch de tamaño 40.],
 ) <fig:ej4_loss40>
 
-==== Entrenamiento por minibatch pequeño (_stochastic gradient descent_)
+=== Entrenamiento por minibatch pequeño (_stochastic gradient descent_)
 
-Como contraste, se reentrenó la red con los mismos parámetros pero usando un minibatch de tamaño 1. Este es el caso más extremo de gradiente descendente estocástico, ya que se utiliza una única muestra cada vez para realizar el entrenamiento. La @fig:ej4_loss1 muestra cómo evoluciona el error de entrenamiento y validación durante el aprendizaje. Debido a que el gradiente es estocástico y la red no siempre modifica sus pesos en la exacta dirección de máximo decrecimiento, vemos cierto ruido tanto en la _loss_ de entrenamiento como en la de validación. Es más notorio el efecto en validación. Sin embargo, en promedio la red sigue corrigiendo sus pesos en una dirección correcta, por lo que puede aprender sin problemas y el error cae rápidamente. Los errores de validación y de entrenamiento obtenidos son menores que para el caso anterior. El ruido en la estimación del gradiente permite que la red escape de mínimos locales no óptimos. Nuevamente, se observa el ligero efecto de memorización dada la alta cantidad de parámetros respecto de la cantidad de muestras de entrenamiento, resultando en una _loss_ de entrenamiento no tan baja. Además, a partir de aproximadamente la época 1000 el error de validación aumenta consistentemente durante un largo tiempo, una clara señal de _overfitting_.
+Como contraste, se reentrenó la red con los mismos parámetros pero usando un minibatch de tamaño 1. Este es el caso más extremo de gradiente descendente estocástico, ya que se utiliza una única muestra cada vez para realizar el entrenamiento. La @fig:ej4_loss1 muestra cómo evoluciona el error de entrenamiento y validación durante el aprendizaje. Debido a que el gradiente es estocástico y la red no siempre modifica sus pesos en la exacta dirección de máximo decrecimiento, vemos cierto ruido tanto en la _loss_ de entrenamiento como en la de validación. Es más notorio el efecto en validación. Sin embargo, en promedio la red sigue corrigiendo sus pesos en una dirección correcta, por lo que puede aprender sin problemas y el error cae rápidamente. Los errores de validación y de entrenamiento obtenidos son menores que para el caso anterior. El ruido en la estimación del gradiente permite que la red escape de mínimos locales no óptimos. Nuevamente, se observa el ligero efecto de memorización dada la alta cantidad de parámetros respecto de la cantidad de muestras de entrenamiento, resultando en una _loss_ de entrenamiento no tan baja. Además, a partir de aproximadamente la época 1000 el error de validación aumenta consistentemente durante un largo tiempo, una clara señal de _overfitting_ (entrenamiento: 0.002; validación: 0.236).
 
 #figure(
   placement: auto,
@@ -303,7 +301,7 @@ Como contraste, se reentrenó la red con los mismos parámetros pero usando un m
   caption: [Entrenamiento de la red de 30 neuronas ocultas con 40 muestras en minibatches de tamaño 1.],
 ) <fig:ej4_loss1>
 
-== Reconstrucción de imágenes con Máquina Restringida de Boltzmann
+= Reconstrucción de imágenes con Máquina Restringida de Boltzmann
 
 En este experimento se entrenó una Máquina Restringida de Boltzmann (RBM) para que sea capaz de reconstruir imágenes del conjunto de datos MNIST. Se evaluó la similitud de la reconstrucción con las imágenes originales para diferentes tamaños de capa oculta. La capa visible consiste de 784 neuronas pues la entrada es una imagen de $28 times 28$ píxeles, y cada neurona es continua en el intervalo $[0, 1]$, correspondiéndose con los posibles valores de escala de grises de cada píxel.
 
@@ -325,9 +323,9 @@ En la @fig:rbm_reconst se muestran ejemplos de reconstrucción de diferentes dí
 
 Es interesante notar que las reconstrucciones son generalmente versiones "borrosas" de las originales, efecto que se hace más notorio cuanto más chica sea la capa oculta. Para el caso de una red muy chica (la red de dos neuronas ocultas), la salida es prácticamente la misma independientemente de la entrada, y aparenta ser un "promedio" de todos los dígitos de entrenamiento. Esto es lógico puesto que si la red no tiene suficiente capacidad, su mejor chance es aprender un promedio de las imágenes deseadas, para minimizar el error dentro de sus posiblidades.
 
-== Clasificación de dígitos manuscritos con Redes Neuronales Convolucionales
+= Clasificación de dígitos manuscritos con Redes Neuronales Convolucionales
 
-En esta sección se buscó entrenar una red convolucional sobre el conjunto de datos MNIST. El objetivo fue encontrar la CNN lo más pequeña posible que fuera capaz de obtener una exactitud de al menos 90 % sobre el conjunto de validación. La arquitectura utilizada fue la más sencilla posible: un conjunto de _feature maps_ convolucionales que operan sobre la imagen de entrada, seguida de una capa de _max pooling_, y finalmente una capa _fully connected_ de diez neuronas, que deben codificar al dígito correspondiente en la entrada. Luego de varias pruebas, se ajustaron los tamaños de la aruitectura hasta llegar a la mostrada en la @fig:cnn_small. La misma tiene dos kernels de convolución en su primera capa, de tamaño $5 times 5$, seguidos de una capa de _max pool_ que opera sobre áreas de tamaño $6 times 6$, y finalmente una capa _fully connected_ que toma las 32 salidas de la capa anterior. La capa convolucional tiene activación ReLU, mientras que la última tiene activación lineal. La red tiene 382 parámetros entrenables#footnote([Cada kernel de convolución tiene $5 times 5=25$ pesos más un sesgo, lo que da 26 pesos por kernel, o 52 en total. La capa completamente conectada tiene dos mapas con 16 píxeles cada uno de entrada, y diez salidas, por lo que tendrá $(2 times 16) times 10=320$ pesos, más un sesgo por salida, para un total de 330. Ambas capas suman 382 parámetros.]).
+En esta sección se buscó entrenar una red convolucional sobre el conjunto de datos MNIST. El objetivo fue encontrar la CNN lo más pequeña posible que fuera capaz de obtener una exactitud de al menos 90~% sobre el conjunto de validación. La arquitectura utilizada fue la más sencilla posible: un conjunto de _feature maps_ convolucionales que operan sobre la imagen de entrada, seguida de una capa de _max pooling_, y finalmente una capa _fully connected_ de diez neuronas, que deben codificar al dígito correspondiente en la entrada. Luego de varias pruebas, se ajustaron los tamaños de la aruitectura hasta llegar a la mostrada en la @fig:cnn_small. La misma tiene dos kernels de convolución en su primera capa, de tamaño $5 times 5$, seguidos de una capa de _max pool_ que opera sobre áreas de tamaño $6 times 6$, y finalmente una capa _fully connected_ que toma las 32 salidas de la capa anterior. La capa convolucional tiene activación ReLU, mientras que la última tiene activación lineal. La red tiene 382 parámetros entrenables#footnote([Cada kernel de convolución tiene $5 times 5=25$ pesos más un sesgo, lo que da 26 pesos por kernel, o 52 en total. La capa completamente conectada tiene dos mapas con 16 píxeles cada uno de entrada, y diez salidas, por lo que tendrá $(2 times 16) times 10=320$ pesos, más un sesgo por salida, para un total de 330. Ambas capas suman 382 parámetros.]).
 
 #figure(
   placement: auto,
@@ -339,7 +337,7 @@ Se obtuvo un _accuracy_ del 93.9 % sobre el conjunto de validación. Esto es not
 
 Se concluye que las redes neuronales convolucionales son una herramienta muy potente para la clasificación de imágenes. Se logró entrenar una CNN con un _accuracy_ respetable del 93.2 %, utilizando una red con 20 veces menos parámetros que los necesarios para obtener un resultado similar en un MLP.
 
-== Clasificación de dígitos manuscritos a partir de representación con autoencoder
+= Clasificación de dígitos manuscritos a partir de representación con autoencoder
 
 Este experimento consistió en entrenar un autoencoder que fuera capaz de reconstruir correctamente las imágenes del conjunto de datos MNIST, para luego utilizar su representación intermedia de baja dimensionalidad para entrenar un clasificador. El autoencoder es una red neuronal MLP con 784 entradas (una por píxel de la imagen de entrada), capas ocultas con 150, 30, y 150 neuronas, y una capa de salida con otras 784 neuronas donde se debería ver reconstruida la imagen original. Esto resulta en un modelo con 245314 parámetros entrenables. El cuello de botella es de 30 dimensiones. Todas las activaciones son ReLU, excepto la última capa que utiliza activación sigmoide pues los píxeles están en el rango $[0, 1]$. La red se entrenó durante cuatro épocas, con una tasa de aprendizaje de 0.01 y un optimizador Adam, minimizando el error cuadrático medio de reconstrucción. Se obvtuvo un MSE sobre el conjunto de validación de $3.06 times 10^(-4)$.
 
@@ -356,9 +354,5 @@ Utilizando las primeras dos capas ocultas, se codificó todo el conjunto de entr
 Como comparación, se entrenó una red neuronal que utilizara las imágenes completas de $28 times 28$ como entrada. La red utilizada fue el MLP más sencillo posible, con 728 en su capa de entrada, ninguna capa oculta, y una capa de salida con 10 neuronas de activación lineal. Esto resulta en 7850 parámetros. Se entrenó utilizando los mismos parámetros y métodos que para el clasificador basado en el autoencoder, y se obtuvo un _accuracy_ de 91.1 % sobre el conjunto de validación tras casi 85 segundos de entrenamiento.
 
 Como se observa, la utilización del autoencoder para el entrenamiento del clasificador resulta en una triple ganancia: el modelo es un 75 % más pequeño, demora un 95 % menos en entrenarse, y comete un 27 % menos de errores, cuando se lo compara con un clasificador basado en las imágenes "crudas."
-
-= Conclusiones
-
-
 
 // vim: lbr
